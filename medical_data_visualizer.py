@@ -40,22 +40,35 @@ def draw_cat_plot():
 # 10
 def draw_heat_map():
     # 11
-    df_heat = None
+    #Meu amigo Daniel me ajudou nessa secção
+    # limpo os dados tirando as linhas desconexas
+    # pressão diastólica não pode ser maior que a sistólica
+    # tiro também os valores muito extremos(outliers) de altura e peso, apenas os 2,5% mais altos/baixos e magros/gordos
+    df_heat = df[
+        (df['ap_lo'] <= df['ap_hi']) &
+        (df['height'] >= df['height'].quantile(0.025)) &
+        (df['height'] <= df['height'].quantile(0.975)) &
+        (df['weight'] >= df['weight'].quantile(0.025)) &
+        (df['weight'] <= df['weight'].quantile(0.975))
+    ]
 
     # 12
-    corr = None
+    # calculo a correlação entre todas as variáveis
+    corr = df_heat.corr(numeric_only=True)
 
     # 13
-    mask = None
-
-
+    # crio uma máscara pra esconder a parte de cima do triângulo, como o exercício pediu
+    mask = np.triu(np.ones_like(corr, dtype=bool))
 
     # 14
-    fig, ax = None
+    # configuro o tamanho da figura pro mapa de calor ficar bonito
+    fig, ax = plt.subplots(figsize=(10, 10))
 
     # 15
-
-
+    #Precisei da AI para configurar todos as funcoes dentro do metodo heatmap
+    #Cores que indicam se a correlação é forte ou fraca
+    # center=0 faz com que o zero fique bem no meio da escala de cores
+    sns.heatmap(corr, mask=mask, annot=True, cmap="coolwarm", fmt=".2f")
 
     # 16
     fig.savefig('heatmap.png')
